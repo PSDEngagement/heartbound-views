@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Heartbound Trailer Views | PerthSanta</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0a;
+      color: #fff;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #e63946;
+    }
+    .header p {
+      color: #aaa;
+      margin-top: 8px;
+      font-size: 0.95rem;
+    }
+    .total-box {
+      background: linear-gradient(135deg, #1a1a1a, #111);
+      border: 1px solid #e63946;
+      border-radius: 16px;
+      padding: 28px 40px;
+      text-align: center;
+      margin-bottom: 36px;
+      box-shadow: 0 0 30px rgba(230, 57, 70, 0.15);
+    }
+    .total-box .label {
+      font-size: 0.9rem;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .total-box .number {
+      font-size: 3.2rem;
+      font-weight: 800;
+      color: #e63946;
+      margin: 8px 0;
+    }
+    .updated {
+      font-size: 0.85rem;
+      color: #666;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      width: 100%;
+      max-width: 900px;
+      margin-bottom: 40px;
+    }
+    .card {
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: #e63946; }
+    .card .platform {
+      font-size: 0.85rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .card .views {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .card .views.loading { color: #555; }
+    .btn {
+      background: #e63946;
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #c1121f; }
+    .btn:disabled { background: #444; cursor: not-allowed; }
+    footer {
+      margin-top: auto;
+      padding-top: 40px;
+      color: #444;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+    a { color: #e63946; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>HEARTBOUND</h1>
+    <p>Official Trailer Views Tracker · PerthSanta</p>
+  </div>
+
+  <div class="total-box">
+    <div class="label">Tổng lượt xem</div>
+    <div class="number" id="total">—</div>
+    <div class="updated" id="updated">Chưa cập nhật</div>
+  </div>
+
+  <div class="grid" id="platforms">
+    <div class="card" data-platform="youtube">
+      <div class="platform">YouTube</div>
+      <div class="views loading">—</div>
+    </div>
+    <div class="card" data-platform="tiktok">
+      <div class="platform">TikTok</div>
+      <div class="views loading">—</div>
+    </div>
+    <div class="card" data-platform="instagram">
+      <div class="platform">Instagram</div>
+      <div class="views loading">—</div>
+    </div>
+    <div class="card" data-platform="facebook">
+      <div class="platform">Facebook</div>
+      <div class="views loading">—</div>
+    </div>
+    <div class="card" data-platform="x">
+      <div class="platform">X</div>
+      <div class="views loading">—</div>
+    </div>
+  </div>
+
+  <button class="btn" id="refreshBtn" onclick="fetchViews()">Cập nhật ngay</button>
+
+  <footer>
+    Data từ Refetcher · Chỉ dùng public data<br>
+    <a href="https://www.youtube.com/watch?v=I1guVkLJ4mU" target="_blank">Xem trailer</a>
+  </footer>
+
+  <script>
+    // ===== CẤU HÌNH =====
+    // Cách tạm 24h: dán key Refetcher vào đây
+    // Cách an toàn: thay bằng URL Cloudflare Worker / Vercel của bạn
+    const API_KEY = "pc_live_YOUR_KEY_HERE";   // ← thay key của bạn
+    const USE_PROXY = false;                   // true nếu dùng worker
+    const PROXY_URL = "https://your-worker.workers.dev"; // nếu dùng proxy
+
+    const URLS = {
+      youtube: "https://www.youtube.com/watch?v=I1guVkLJ4mU",
+      tiktok: "https://www.tiktok.com/@gmmtvofficial/video/7664261665067781397",
+      instagram: "https://www.instagram.com/p/Da-rtbyPdbA/",
+      facebook: "https://www.facebook.com/reel/1336300241948813/",
+      x: "https://x.com/GMMTV/status/2078863739143803261"
+    };
+
+    function formatNumber(n) {
+      if (n == null) return "—";
+      return n.toLocaleString("en-US");
+    }
+
+    async function fetchViews() {
+      const btn = document.getElementById("refreshBtn");
+      btn.disabled = true;
+      btn.textContent = "Đang lấy dữ liệu...";
+
+      // reset loading
+      document.querySelectorAll(".views").forEach(el => {
+        el.classList.add("loading");
+        el.textContent = "...";
+      });
+      document.getElementById("total").textContent = "...";
+
+      try {
+        let data;
+        if (USE_PROXY) {
+          const res = await fetch(PROXY_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ urls: Object.values(URLS) })
+          });
+          data = await res.json();
+        } else {
+          // Gọi trực tiếp Refetcher (chỉ dùng tạm 24h)
+          const res = await fetch("https://api.refetcher.com/", {
+            method: "POST",
+            headers: {
+              "X-API-Key": API_KEY,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ urls: Object.values(URLS) })
+          });
+          data = await res.json();
+        }
+
+        let total = 0;
+        const platformMap = {};
+
+        (data.results || []).forEach(item => {
+          if (item.success && item.metrics) {
+            const views = item.metrics.views ?? item.metrics.plays ?? null;
+            platformMap[item.platform] = views;
+            if (views != null) total += views;
+          }
+        });
+
+        // Cập nhật UI
+        document.querySelectorAll(".card").forEach(card => {
+          const p = card.dataset.platform;
+          const el = card.querySelector(".views");
+          el.classList.remove("loading");
+          el.textContent = formatNumber(platformMap[p]);
+        });
+
+        document.getElementById("total").textContent = formatNumber(total);
+        const now = new Date();
+        document.getElementById("updated").textContent =
+          "Cập nhật lúc " + now.toLocaleString("vi-VN", { hour12: false });
+
+      } catch (err) {
+        console.error(err);
+        alert("Lỗi lấy dữ liệu: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Cập nhật ngay";
+      }
+    }
+
+    // Tự động lấy lần đầu khi mở trang
+    fetchViews();
+  </script>
+</body>
+</html>
