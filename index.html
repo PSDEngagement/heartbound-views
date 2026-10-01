@@ -1,246 +1,1049 @@
+```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Heartbound Trailer Views | PerthSanta</title>
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       background: #0a0a0a;
       color: #fff;
-      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-family: "Segoe UI", system-ui, sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 40px 20px;
     }
+
     .header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 32px;
     }
+
     .header h1 {
       font-size: 2.2rem;
       font-weight: 700;
       letter-spacing: 1px;
       color: #e63946;
     }
+
     .header p {
       color: #aaa;
       margin-top: 8px;
       font-size: 0.95rem;
     }
+
+    /* =========================
+       TARGET
+    ========================= */
+
+    .target-box {
+      width: 100%;
+      max-width: 900px;
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 16px;
+      padding: 22px 26px;
+      margin-bottom: 20px;
+    }
+
+    .target-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+
+    .target-title {
+      font-size: 0.9rem;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .target-number {
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background: #222;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress {
+      width: 0%;
+      height: 100%;
+      background: #e63946;
+      border-radius: 999px;
+      transition: width 1s ease;
+    }
+
+    .progress-text {
+      margin-top: 9px;
+      text-align: right;
+      color: #777;
+      font-size: 0.8rem;
+    }
+
+    /* =========================
+       TOTAL
+    ========================= */
+
     .total-box {
+      width: 100%;
+      max-width: 900px;
+
       background: linear-gradient(135deg, #1a1a1a, #111);
+
       border: 1px solid #e63946;
       border-radius: 16px;
+
       padding: 28px 40px;
+
       text-align: center;
-      margin-bottom: 36px;
-      box-shadow: 0 0 30px rgba(230, 57, 70, 0.15);
+
+      margin-bottom: 28px;
+
+      box-shadow:
+        0 0 30px rgba(230, 57, 70, 0.15);
     }
+
     .total-box .label {
       font-size: 0.9rem;
       color: #aaa;
       text-transform: uppercase;
       letter-spacing: 2px;
     }
+
     .total-box .number {
       font-size: 3.2rem;
       font-weight: 800;
       color: #e63946;
       margin: 8px 0;
+      font-variant-numeric: tabular-nums;
     }
+
     .updated {
       font-size: 0.85rem;
       color: #666;
     }
+
+    /* =========================
+       PLATFORM GRID
+    ========================= */
+
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+
+      grid-template-columns:
+        repeat(auto-fit, minmax(180px, 1fr));
+
       gap: 16px;
+
       width: 100%;
       max-width: 900px;
-      margin-bottom: 40px;
+
+      margin-bottom: 28px;
     }
+
     .card {
       background: #141414;
+
       border: 1px solid #222;
+
       border-radius: 12px;
+
       padding: 20px;
+
       text-align: center;
-      transition: border-color 0.2s;
+
+      transition:
+        border-color 0.2s,
+        transform 0.2s;
     }
-    .card:hover { border-color: #e63946; }
+
+    .card:hover {
+      border-color: #e63946;
+      transform: translateY(-2px);
+    }
+
     .card .platform {
       font-size: 0.85rem;
       color: #888;
+
       text-transform: uppercase;
       letter-spacing: 1px;
+
       margin-bottom: 8px;
     }
+
     .card .views {
       font-size: 1.6rem;
       font-weight: 700;
+
+      color: #fff;
+
+      font-variant-numeric: tabular-nums;
+
+      min-height: 30px;
+    }
+
+    .card .views.loading {
+      color: #555;
+    }
+
+    /* =========================
+       WATCH BUTTON
+    ========================= */
+
+    .watch-btn {
+      display: inline-block;
+
+      margin-top: 14px;
+
+      padding: 8px 18px;
+
+      background: transparent;
+
+      border: 1px solid #444;
+
+      border-radius: 6px;
+
+      color: #ddd;
+
+      text-decoration: none;
+
+      font-size: 0.8rem;
+
+      font-weight: 600;
+
+      letter-spacing: 0.5px;
+
+      transition:
+        background 0.2s,
+        border-color 0.2s,
+        color 0.2s;
+    }
+
+    .watch-btn:hover {
+      background: #e63946;
+      border-color: #e63946;
       color: #fff;
     }
-    .card .views.loading { color: #555; }
+
+    /* =========================
+       REFRESH BUTTON
+    ========================= */
+
     .btn {
       background: #e63946;
+
       color: white;
+
       border: none;
+
       padding: 14px 32px;
+
       font-size: 1rem;
+
       font-weight: 600;
+
       border-radius: 8px;
+
       cursor: pointer;
-      transition: background 0.2s;
+
+      transition:
+        background 0.2s,
+        transform 0.2s;
     }
-    .btn:hover { background: #c1121f; }
-    .btn:disabled { background: #444; cursor: not-allowed; }
-    footer {
-      margin-top: auto;
-      padding-top: 40px;
-      color: #444;
+
+    .btn:hover {
+      background: #c1121f;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn:disabled {
+      background: #444;
+      cursor: not-allowed;
+    }
+
+    /* =========================
+       STATUS
+    ========================= */
+
+    .status {
+      margin-top: 12px;
+      color: #555;
       font-size: 0.8rem;
       text-align: center;
     }
-    a { color: #e63946; text-decoration: none; }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+      margin-top: auto;
+
+      padding-top: 40px;
+
+      color: #444;
+
+      font-size: 0.8rem;
+
+      text-align: center;
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 600px) {
+
+      body {
+        padding: 28px 14px;
+      }
+
+      .header h1 {
+        font-size: 1.8rem;
+      }
+
+      .total-box {
+        padding: 24px 18px;
+      }
+
+      .total-box .number {
+        font-size: 2.5rem;
+      }
+
+      .target-box {
+        padding: 18px;
+      }
+
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .card {
+        padding: 16px 10px;
+      }
+
+      .card .views {
+        font-size: 1.3rem;
+      }
+
+    }
   </style>
 </head>
+
+
 <body>
+
+  <!-- =========================
+       HEADER
+  ========================== -->
+
   <div class="header">
+
     <h1>HEARTBOUND</h1>
-    <p>Official Trailer Views Tracker · PerthSanta</p>
+
+    <p>
+      Official Trailer Views Tracker · PerthSanta
+    </p>
+
   </div>
+
+
+  <!-- =========================
+       TARGET
+  ========================== -->
+
+  <div class="target-box">
+
+    <div class="target-header">
+
+      <div class="target-title">
+        Target
+      </div>
+
+      <div class="target-number" id="targetNumber">
+        25,000,000
+      </div>
+
+    </div>
+
+    <div class="progress-bar">
+
+      <div
+        class="progress"
+        id="progress"
+      ></div>
+
+    </div>
+
+    <div
+      class="progress-text"
+      id="progressText"
+    >
+      0.00%
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       TOTAL
+  ========================== -->
 
   <div class="total-box">
-    <div class="label">Tổng lượt xem</div>
-    <div class="number" id="total">—</div>
-    <div class="updated" id="updated">Chưa cập nhật</div>
+
+    <div class="label">
+      Tổng lượt xem
+    </div>
+
+    <div
+      class="number"
+      id="total"
+    >
+      —
+    </div>
+
+    <div
+      class="updated"
+      id="updated"
+    >
+      Chưa cập nhật
+    </div>
+
   </div>
 
-  <div class="grid" id="platforms">
-    <div class="card" data-platform="youtube">
-      <div class="platform">YouTube</div>
-      <div class="views loading">—</div>
+
+  <!-- =========================
+       PLATFORMS
+  ========================== -->
+
+  <div
+    class="grid"
+    id="platforms"
+  >
+
+    <div
+      class="card"
+      data-platform="youtube"
+    >
+
+      <div class="platform">
+        YouTube
+      </div>
+
+      <div class="views loading">
+        —
+      </div>
+
+      <a
+        class="watch-btn"
+        href="https://www.youtube.com/watch?v=I1guVkLJ4mU"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        WATCH
+      </a>
+
     </div>
-    <div class="card" data-platform="tiktok">
-      <div class="platform">TikTok</div>
-      <div class="views loading">—</div>
+
+
+    <div
+      class="card"
+      data-platform="tiktok"
+    >
+
+      <div class="platform">
+        TikTok
+      </div>
+
+      <div class="views loading">
+        —
+      </div>
+
+      <a
+        class="watch-btn"
+        href="https://www.tiktok.com/@gmmtvofficial/video/7664261665067781397"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        WATCH
+      </a>
+
     </div>
-    <div class="card" data-platform="instagram">
-      <div class="platform">Instagram</div>
-      <div class="views loading">—</div>
+
+
+    <div
+      class="card"
+      data-platform="instagram"
+    >
+
+      <div class="platform">
+        Instagram
+      </div>
+
+      <div class="views loading">
+        —
+      </div>
+
+      <a
+        class="watch-btn"
+        href="https://www.instagram.com/reel/DdRakUhBX7X/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        WATCH
+      </a>
+
     </div>
-    <div class="card" data-platform="facebook">
-      <div class="platform">Facebook</div>
-      <div class="views loading">—</div>
+
+
+    <div
+      class="card"
+      data-platform="facebook"
+    >
+
+      <div class="platform">
+        Facebook
+      </div>
+
+      <div class="views loading">
+        —
+      </div>
+
+      <a
+        class="watch-btn"
+        href="https://www.facebook.com/reel/1336300241948813/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        WATCH
+      </a>
+
     </div>
-    <div class="card" data-platform="x">
-      <div class="platform">X</div>
-      <div class="views loading">—</div>
+
+
+    <div
+      class="card"
+      data-platform="x"
+    >
+
+      <div class="platform">
+        X
+      </div>
+
+      <div class="views loading">
+        —
+      </div>
+
+      <a
+        class="watch-btn"
+        href="https://x.com/GMMTV/status/2078863739143803261"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        WATCH
+      </a>
+
     </div>
+
   </div>
 
-  <button class="btn" id="refreshBtn" onclick="fetchViews()">Cập nhật ngay</button>
+
+  <!-- =========================
+       REFRESH
+  ========================== -->
+
+  <button
+    class="btn"
+    id="refreshBtn"
+    onclick="fetchViews()"
+  >
+    Cập nhật ngay
+  </button>
+
+  <div
+    class="status"
+    id="status"
+  >
+    Đang kết nối...
+  </div>
+
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
 
   <footer>
-    Data từ Refetcher · Chỉ dùng public data<br>
-    <a href="https://www.youtube.com/watch?v=I1guVkLJ4mU" target="_blank">Xem trailer</a>
+
+    Data từ Refetcher · Public data
+
   </footer>
 
+
   <script>
-    // ===== CẤU HÌNH =====
-    // Cách tạm 24h: dán key Refetcher vào đây
-    // Cách an toàn: thay bằng URL Cloudflare Worker / Vercel của bạn
-    const API_KEY = "pc_live_Zx55Q0Aqka__7e_YqBmzC5vK3CqrQ-yW";   // ← thay key của bạn
-    const USE_PROXY = false;                   // true nếu dùng worker
-    const PROXY_URL = "https://your-worker.workers.dev"; // nếu dùng proxy
 
-    const URLS = {
-      youtube: "https://www.youtube.com/watch?v=I1guVkLJ4mU",
-      tiktok: "https://www.tiktok.com/@gmmtvofficial/video/7664261665067781397",
-      instagram: "https://www.instagram.com/reel/DdRakUhBX7X/?utm_source=ig_web_copy_link&stkn=MzRlODBiNWFlZA==",
-      facebook: "https://www.facebook.com/reel/1336300241948813/",
-      x: "https://x.com/GMMTV/status/2078863739143803261"
-    };
+    /* =====================================================
+       CONFIG
+    ===================================================== */
 
-    function formatNumber(n) {
-      if (n == null) return "—";
-      return n.toLocaleString("en-US");
+    /*
+      THAY URL NÀY bằng URL Cloudflare Worker của bạn.
+
+      Ví dụ:
+
+      https://heartbound-view-tracker.xxx.workers.dev
+    */
+
+    const WORKER_URL =
+      "https://heartbound-view-tracker.vokhanh2210.workers.dev";
+
+
+    /*
+      TARGET
+    */
+
+    const TARGET_VIEWS = 25000000;
+
+
+    /*
+      Bangkok timezone
+    */
+
+    const BANGKOK_TIMEZONE =
+      "Asia/Bangkok";
+
+
+    /* =====================================================
+       ELEMENTS
+    ===================================================== */
+
+    const totalElement =
+      document.getElementById("total");
+
+    const updatedElement =
+      document.getElementById("updated");
+
+    const refreshButton =
+      document.getElementById("refreshBtn");
+
+    const statusElement =
+      document.getElementById("status");
+
+    const progressElement =
+      document.getElementById("progress");
+
+    const progressTextElement =
+      document.getElementById("progressText");
+
+
+    /* =====================================================
+       FORMAT NUMBER
+    ===================================================== */
+
+    function formatNumber(number) {
+
+      if (number == null) {
+        return "—";
+      }
+
+      return Number(number).toLocaleString("en-US");
+
     }
 
-    async function fetchViews() {
-      const btn = document.getElementById("refreshBtn");
-      btn.disabled = true;
-      btn.textContent = "Đang lấy dữ liệu...";
 
-      // reset loading
-      document.querySelectorAll(".views").forEach(el => {
-        el.classList.add("loading");
-        el.textContent = "...";
-      });
-      document.getElementById("total").textContent = "...";
+    /* =====================================================
+       FORMAT BANGKOK TIME
+    ===================================================== */
 
-      try {
-        let data;
-        if (USE_PROXY) {
-          const res = await fetch(PROXY_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ urls: Object.values(URLS) })
-          });
-          data = await res.json();
-        } else {
-          // Gọi trực tiếp Refetcher (chỉ dùng tạm 24h)
-          const res = await fetch("https://api.refetcher.com/", {
-            method: "POST",
-            headers: {
-              "X-API-Key": API_KEY,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ urls: Object.values(URLS) })
-          });
-          data = await res.json();
+    function formatBangkokTime(dateString) {
+
+      if (!dateString) {
+        return "Chưa cập nhật";
+      }
+
+      const date =
+        new Date(dateString);
+
+      return (
+        "Updated: " +
+        date.toLocaleString(
+          "en-GB",
+          {
+            timeZone: BANGKOK_TIMEZONE,
+
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+
+            hour12: false
+          }
+        ) +
+        " (BKK)"
+      );
+
+    }
+
+
+    /* =====================================================
+       ANIMATE NUMBER
+    ===================================================== */
+
+    function animateNumber(
+      element,
+      from,
+      to,
+      duration = 1000
+    ) {
+
+      from = Number(from) || 0;
+      to = Number(to) || 0;
+
+      if (from === to) {
+
+        element.textContent =
+          formatNumber(to);
+
+        return;
+
+      }
+
+      const startTime =
+        performance.now();
+
+      function update(currentTime) {
+
+        const elapsed =
+          currentTime - startTime;
+
+        const progress =
+          Math.min(
+            elapsed / duration,
+            1
+          );
+
+        /*
+          Smooth easing
+        */
+
+        const eased =
+          1 - Math.pow(
+            1 - progress,
+            3
+          );
+
+        const current =
+          Math.round(
+            from +
+            (to - from) * eased
+          );
+
+        element.textContent =
+          formatNumber(current);
+
+        if (progress < 1) {
+
+          requestAnimationFrame(update);
+
         }
 
-        let total = 0;
-        const platformMap = {};
-
-        (data.results || []).forEach(item => {
-          if (item.success && item.metrics) {
-            const views = item.metrics.views ?? item.metrics.plays ?? null;
-            platformMap[item.platform] = views;
-            if (views != null) total += views;
-          }
-        });
-
-        // Cập nhật UI
-        document.querySelectorAll(".card").forEach(card => {
-          const p = card.dataset.platform;
-          const el = card.querySelector(".views");
-          el.classList.remove("loading");
-          el.textContent = formatNumber(platformMap[p]);
-        });
-
-        document.getElementById("total").textContent = formatNumber(total);
-        const now = new Date();
-        document.getElementById("updated").textContent =
-          "Cập nhật lúc " + now.toLocaleString("vi-VN", { hour12: false });
-
-      } catch (err) {
-        console.error(err);
-        alert("Lỗi lấy dữ liệu: " + err.message);
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "Cập nhật ngay";
       }
+
+      requestAnimationFrame(update);
+
     }
 
-    // Tự động lấy lần đầu khi mở trang
+
+    /* =====================================================
+       UPDATE PROGRESS
+    ===================================================== */
+
+    function updateProgress(total) {
+
+      const percentage =
+        Math.min(
+          (Number(total) / TARGET_VIEWS) * 100,
+          100
+        );
+
+      progressElement.style.width =
+        percentage + "%";
+
+      progressTextElement.textContent =
+        percentage.toFixed(2) + "%";
+
+    }
+
+
+    /* =====================================================
+       UPDATE PLATFORM
+    ===================================================== */
+
+    function updatePlatform(
+      platform,
+      newValue
+    ) {
+
+      const card =
+        document.querySelector(
+          `.card[data-platform="${platform}"]`
+        );
+
+      if (!card) {
+        return;
+      }
+
+      const element =
+        card.querySelector(".views");
+
+      const oldValue =
+        Number(
+          element.dataset.value || 0
+        );
+
+      element.classList.remove("loading");
+
+      /*
+        Instagram có thể trả null
+      */
+
+      if (newValue == null) {
+
+        element.textContent = "—";
+
+        element.dataset.value = "";
+
+        return;
+
+      }
+
+      /*
+        Animate tăng từ số cũ → số mới
+      */
+
+      animateNumber(
+        element,
+        oldValue,
+        Number(newValue),
+        900
+      );
+
+      element.dataset.value =
+        Number(newValue);
+
+    }
+
+
+    /* =====================================================
+       FETCH FROM CLOUDFLARE WORKER
+    ===================================================== */
+
+    async function fetchViews() {
+
+      refreshButton.disabled = true;
+
+      refreshButton.textContent =
+        "Đang cập nhật...";
+
+      statusElement.textContent =
+        "Đang lấy dữ liệu...";
+
+      try {
+
+        /*
+          Worker endpoint:
+
+          GET /views
+        */
+
+        const response =
+          await fetch(
+            WORKER_URL + "/views",
+            {
+              method: "GET",
+              cache: "no-store"
+            }
+          );
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            `Worker HTTP ${response.status}`
+          );
+
+        }
+
+
+        const data =
+          await response.json();
+
+
+        if (!data.success) {
+
+          throw new Error(
+            data.message ||
+            "Không lấy được dữ liệu"
+          );
+
+        }
+
+
+        /* =========================
+           PLATFORM VIEWS
+        ========================= */
+
+        const views =
+          data.views || {};
+
+
+        updatePlatform(
+          "youtube",
+          views.youtube
+        );
+
+        updatePlatform(
+          "tiktok",
+          views.tiktok
+        );
+
+        updatePlatform(
+          "instagram",
+          views.instagram
+        );
+
+        updatePlatform(
+          "facebook",
+          views.facebook
+        );
+
+        updatePlatform(
+          "x",
+          views.x
+        );
+
+
+        /* =========================
+           TOTAL
+        ========================= */
+
+        const total =
+          Number(data.total) || 0;
+
+
+        const oldTotal =
+          Number(
+            totalElement.dataset.value || 0
+          );
+
+
+        animateNumber(
+          totalElement,
+          oldTotal,
+          total,
+          1200
+        );
+
+
+        totalElement.dataset.value =
+          total;
+
+
+        /* =========================
+           TARGET
+        ========================= */
+
+        updateProgress(total);
+
+
+        /* =========================
+           UPDATED TIME
+        ========================= */
+
+        updatedElement.textContent =
+          formatBangkokTime(
+            data.updatedAt
+          );
+
+
+        statusElement.textContent =
+          "Đã cập nhật thành công";
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        statusElement.textContent =
+          "Không thể kết nối Worker";
+
+        console.error(
+          "Heartbound tracker error:",
+          error
+        );
+
+      } finally {
+
+        refreshButton.disabled =
+          false;
+
+        refreshButton.textContent =
+          "Cập nhật ngay";
+
+      }
+
+    }
+
+
+    /* =====================================================
+       INITIAL LOAD
+    ===================================================== */
+
     fetchViews();
+
+
+    /*
+      Tự kiểm tra Worker mỗi 60 giây.
+
+      Cron của Worker vẫn chạy mỗi 5 phút.
+      Website chỉ đọc dữ liệu mới từ KV.
+    */
+
+    setInterval(
+      fetchViews,
+      60 * 1000
+    );
+
   </script>
+
 </body>
 </html>
+```
