@@ -1,6 +1,6 @@
 ```html
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -108,18 +108,12 @@
     .total-box {
       width: 100%;
       max-width: 900px;
-
       background: linear-gradient(135deg, #1a1a1a, #111);
-
       border: 1px solid #e63946;
       border-radius: 16px;
-
       padding: 28px 40px;
-
       text-align: center;
-
       margin-bottom: 28px;
-
       box-shadow:
         0 0 30px rgba(230, 57, 70, 0.15);
     }
@@ -135,8 +129,16 @@
       font-size: 3.2rem;
       font-weight: 800;
       color: #e63946;
-      margin: 8px 0;
+      margin: 8px 0 4px;
       font-variant-numeric: tabular-nums;
+    }
+
+    .increase {
+      font-size: 0.9rem;
+      color: #e63946;
+      font-weight: 600;
+      margin-bottom: 8px;
+      min-height: 20px;
     }
 
     .updated {
@@ -150,29 +152,20 @@
 
     .grid {
       display: grid;
-
       grid-template-columns:
         repeat(auto-fit, minmax(180px, 1fr));
-
       gap: 16px;
-
       width: 100%;
       max-width: 900px;
-
       margin-bottom: 28px;
     }
 
     .card {
       background: #141414;
-
       border: 1px solid #222;
-
       border-radius: 12px;
-
       padding: 20px;
-
       text-align: center;
-
       transition:
         border-color 0.2s,
         transform 0.2s;
@@ -186,21 +179,16 @@
     .card .platform {
       font-size: 0.85rem;
       color: #888;
-
       text-transform: uppercase;
       letter-spacing: 1px;
-
       margin-bottom: 8px;
     }
 
     .card .views {
       font-size: 1.6rem;
       font-weight: 700;
-
       color: #fff;
-
       font-variant-numeric: tabular-nums;
-
       min-height: 30px;
     }
 
@@ -214,27 +202,16 @@
 
     .watch-btn {
       display: inline-block;
-
       margin-top: 14px;
-
       padding: 8px 18px;
-
       background: transparent;
-
       border: 1px solid #444;
-
       border-radius: 6px;
-
       color: #ddd;
-
       text-decoration: none;
-
       font-size: 0.8rem;
-
       font-weight: 600;
-
       letter-spacing: 0.5px;
-
       transition:
         background 0.2s,
         border-color 0.2s,
@@ -248,50 +225,11 @@
     }
 
     /* =========================
-       REFRESH BUTTON
-    ========================= */
-
-    .btn {
-      background: #e63946;
-
-      color: white;
-
-      border: none;
-
-      padding: 14px 32px;
-
-      font-size: 1rem;
-
-      font-weight: 600;
-
-      border-radius: 8px;
-
-      cursor: pointer;
-
-      transition:
-        background 0.2s,
-        transform 0.2s;
-    }
-
-    .btn:hover {
-      background: #c1121f;
-    }
-
-    .btn:active {
-      transform: scale(0.98);
-    }
-
-    .btn:disabled {
-      background: #444;
-      cursor: not-allowed;
-    }
-
-    /* =========================
        STATUS
     ========================= */
 
     .status {
-      margin-top: 12px;
+      margin-top: 4px;
       color: #555;
       font-size: 0.8rem;
       text-align: center;
@@ -303,13 +241,9 @@
 
     footer {
       margin-top: auto;
-
       padding-top: 40px;
-
       color: #444;
-
       font-size: 0.8rem;
-
       text-align: center;
     }
 
@@ -355,7 +289,6 @@
     }
   </style>
 </head>
-
 
 <body>
 
@@ -418,7 +351,7 @@
   <div class="total-box">
 
     <div class="label">
-      Tổng lượt xem
+      Total Views
     </div>
 
     <div
@@ -429,10 +362,17 @@
     </div>
 
     <div
+      class="increase"
+      id="increase"
+    >
+      —
+    </div>
+
+    <div
       class="updated"
       id="updated"
     >
-      Chưa cập nhật
+      Not updated yet
     </div>
 
   </div>
@@ -575,22 +515,14 @@
 
 
   <!-- =========================
-       REFRESH
+       STATUS
   ========================== -->
-
-  <button
-    class="btn"
-    id="refreshBtn"
-    onclick="fetchViews()"
-  >
-    Cập nhật ngay
-  </button>
 
   <div
     class="status"
     id="status"
   >
-    Đang kết nối...
+    Connecting...
   </div>
 
 
@@ -599,9 +531,7 @@
   ========================== -->
 
   <footer>
-
-    Data từ Refetcher · Public data
-
+    Data from Refetcher · Public data
   </footer>
 
 
@@ -611,28 +541,11 @@
        CONFIG
     ===================================================== */
 
-    /*
-      THAY URL NÀY bằng URL Cloudflare Worker của bạn.
-
-      Ví dụ:
-
-      https://heartbound-view-tracker.xxx.workers.dev
-    */
-
     const WORKER_URL =
       "https://heartbound-view-tracker.vokhanh2210.workers.dev";
 
-
-    /*
-      TARGET
-    */
-
-    const TARGET_VIEWS = 25000000;
-
-
-    /*
-      Bangkok timezone
-    */
+    const TARGET_VIEWS =
+      25000000;
 
     const BANGKOK_TIMEZONE =
       "Asia/Bangkok";
@@ -645,11 +558,11 @@
     const totalElement =
       document.getElementById("total");
 
+    const increaseElement =
+      document.getElementById("increase");
+
     const updatedElement =
       document.getElementById("updated");
-
-    const refreshButton =
-      document.getElementById("refreshBtn");
 
     const statusElement =
       document.getElementById("status");
@@ -683,7 +596,7 @@
     function formatBangkokTime(dateString) {
 
       if (!dateString) {
-        return "Chưa cập nhật";
+        return "Not updated yet";
       }
 
       const date =
@@ -695,15 +608,12 @@
           "en-GB",
           {
             timeZone: BANGKOK_TIMEZONE,
-
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
-
             hour: "2-digit",
             minute: "2-digit",
             second: "2-digit",
-
             hour12: false
           }
         ) +
@@ -750,10 +660,6 @@
             1
           );
 
-        /*
-          Smooth easing
-        */
-
         const eased =
           1 - Math.pow(
             1 - progress,
@@ -770,9 +676,7 @@
           formatNumber(current);
 
         if (progress < 1) {
-
           requestAnimationFrame(update);
-
         }
 
       }
@@ -831,23 +735,14 @@
 
       element.classList.remove("loading");
 
-      /*
-        Instagram có thể trả null
-      */
-
       if (newValue == null) {
 
         element.textContent = "—";
-
         element.dataset.value = "";
 
         return;
 
       }
-
-      /*
-        Animate tăng từ số cũ → số mới
-      */
 
       animateNumber(
         element,
@@ -868,21 +763,10 @@
 
     async function fetchViews() {
 
-      refreshButton.disabled = true;
-
-      refreshButton.textContent =
-        "Đang cập nhật...";
-
       statusElement.textContent =
-        "Đang lấy dữ liệu...";
+        "Checking for updates...";
 
       try {
-
-        /*
-          Worker endpoint:
-
-          GET /views
-        */
 
         const response =
           await fetch(
@@ -911,7 +795,7 @@
 
           throw new Error(
             data.message ||
-            "Không lấy được dữ liệu"
+            "Unable to retrieve data"
           );
 
         }
@@ -959,15 +843,50 @@
           Number(data.total) || 0;
 
 
-        const oldTotal =
+        const previousTotal =
           Number(
             totalElement.dataset.value || 0
           );
 
 
+        /*
+          Only calculate the increase
+          when the total actually changes.
+        */
+
+        if (
+          totalElement.dataset.value !== undefined &&
+          total > previousTotal
+        ) {
+
+          const increase =
+            total - previousTotal;
+
+          increaseElement.textContent =
+            "+" +
+            formatNumber(increase) +
+            " views since last update";
+
+        }
+
+
+        /*
+          First load
+        */
+
+        if (
+          totalElement.dataset.value === undefined
+        ) {
+
+          increaseElement.textContent =
+            "First update";
+
+        }
+
+
         animateNumber(
           totalElement,
-          oldTotal,
+          previousTotal,
           total,
           1200
         );
@@ -995,28 +914,18 @@
 
 
         statusElement.textContent =
-          "Đã cập nhật thành công";
+          "Auto-updating · Checking every minute";
 
 
       } catch (error) {
-
-        console.error(error);
-
-        statusElement.textContent =
-          "Không thể kết nối Worker";
 
         console.error(
           "Heartbound tracker error:",
           error
         );
 
-      } finally {
-
-        refreshButton.disabled =
-          false;
-
-        refreshButton.textContent =
-          "Cập nhật ngay";
+        statusElement.textContent =
+          "Unable to connect to the Worker";
 
       }
 
@@ -1030,11 +939,15 @@
     fetchViews();
 
 
-    /*
-      Tự kiểm tra Worker mỗi 60 giây.
+    /* =====================================================
+       AUTO UPDATE
+    ===================================================== */
 
-      Cron của Worker vẫn chạy mỗi 5 phút.
-      Website chỉ đọc dữ liệu mới từ KV.
+    /*
+      The website checks the Worker every 60 seconds.
+
+      Cloudflare Cron updates the stored data
+      every 5 minutes.
     */
 
     setInterval(
