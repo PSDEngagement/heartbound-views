@@ -101,69 +101,50 @@
       font-size: 0.8rem;
     }
 
-/* =========================
-   TOTAL
-========================= */
+    /* =========================
+       TOTAL
+    ========================= */
 
-const total =
-  Number(data.total) || 0;
+    .total-box {
+      width: 100%;
+      max-width: 900px;
+      background: linear-gradient(135deg, #1a1a1a, #111);
+      border: 1px solid #e63946;
+      border-radius: 16px;
+      padding: 28px 40px;
+      text-align: center;
+      margin-bottom: 28px;
+      box-shadow:
+        0 0 30px rgba(230, 57, 70, 0.15);
+    }
 
-const hasPreviousValue =
-  totalElement.dataset.value !== undefined &&
-  totalElement.dataset.value !== "";
+    .total-box .label {
+      font-size: 0.9rem;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
 
-const previousTotal =
-  hasPreviousValue
-    ? Number(totalElement.dataset.value)
-    : null;
+    .total-box .number {
+      font-size: 3.2rem;
+      font-weight: 800;
+      color: #e63946;
+      margin: 8px 0 4px;
+      font-variant-numeric: tabular-nums;
+    }
 
+    .increase {
+      font-size: 0.9rem;
+      color: #e63946;
+      font-weight: 600;
+      margin-bottom: 8px;
+      min-height: 20px;
+    }
 
-/*
-  Calculate increase only when
-  we already have a previous value
-  during this page session.
-*/
-
-if (
-  hasPreviousValue &&
-  total > previousTotal
-) {
-
-  const increase =
-    total - previousTotal;
-
-  increaseElement.textContent =
-    "+" +
-    formatNumber(increase) +
-    " views since last update";
-
-} else if (!hasPreviousValue) {
-
-  /*
-    First time opening/reloading the page:
-    show the latest saved total,
-    but do not show "First update".
-  */
-
-  increaseElement.textContent = "";
-
-} else {
-
-  increaseElement.textContent = "";
-
-}
-
-
-animateNumber(
-  totalElement,
-  previousTotal === null ? total : previousTotal,
-  total,
-  previousTotal === null ? 0 : 1200
-);
-
-
-totalElement.dataset.value =
-  total;
+    .updated {
+      font-size: 0.85rem;
+      color: #666;
+    }
 
     /* =========================
        PLATFORM GRID
@@ -861,39 +842,57 @@ totalElement.dataset.value =
         const total =
           Number(data.total) || 0;
 
-
         const previousTotal =
-          Number(
-            totalElement.dataset.value || 0
-          );
+          data.previousTotal != null
+            ? Number(data.previousTotal)
+            : null;
 
 
         /*
-          Only calculate the increase
-          when the total actually changes.
+          Show the increase from the
+          previous Cron update.
         */
 
-        if (
-          totalElement.dataset.value !== undefined &&
-          total > previousTotal
-        ) {
+        if (previousTotal !== null) {
 
           const increase =
             total - previousTotal;
 
           increaseElement.textContent =
-            "+" +
+            (increase >= 0 ? "+" : "") +
             formatNumber(increase) +
             " views since last update";
+
+        } else {
+
+          increaseElement.textContent = "";
 
         }
 
 
+        /*
+          On first page load, show the
+          latest saved total immediately.
+
+          On later checks, animate changes.
+        */
+
+        const currentDisplayed =
+          totalElement.dataset.value !== undefined &&
+          totalElement.dataset.value !== ""
+            ? Number(totalElement.dataset.value)
+            : null;
+
+
         animateNumber(
           totalElement,
-          previousTotal,
+          currentDisplayed === null
+            ? total
+            : currentDisplayed,
           total,
-          1200
+          currentDisplayed === null
+            ? 0
+            : 1200
         );
 
 
