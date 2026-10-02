@@ -675,19 +675,40 @@
        UPDATE PLATFORM CARDS
     ===================================================== */
 
-    function updatePlatforms(viewsData) {
-      const cards = document.querySelectorAll(".card");
+  function updatePlatforms(viewsData) {
+  const cards = document.querySelectorAll(".card");
 
-      cards.forEach(card => {
-        const platform = card.dataset.platform;
-        const viewsEl = card.querySelector(".views");
+  cards.forEach(card => {
+    const platform = card.dataset.platform;
+    const viewsEl = card.querySelector(".views");
 
-        if (viewsData && viewsData[platform] != null) {
-          viewsEl.classList.remove("loading");
-          viewsEl.textContent = formatNumber(viewsData[platform]);
-        }
-      });
+    const newValue =
+      viewsData && viewsData[platform] != null
+        ? Number(viewsData[platform])
+        : null;
+
+    viewsEl.classList.remove("loading");
+
+    if (newValue === null) {
+      viewsEl.textContent = "—";
+      viewsEl.dataset.value = "";
+      return;
     }
+
+    const oldValue =
+      Number(viewsEl.dataset.value || 0);
+
+    animateNumber(
+      viewsEl,
+      oldValue,
+      newValue,
+      900
+    );
+
+    viewsEl.dataset.value =
+      newValue;
+  });
+}
 
 
     /* =====================================================
