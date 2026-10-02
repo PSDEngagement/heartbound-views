@@ -101,50 +101,69 @@
       font-size: 0.8rem;
     }
 
-    /* =========================
-       TOTAL
-    ========================= */
+/* =========================
+   TOTAL
+========================= */
 
-    .total-box {
-      width: 100%;
-      max-width: 900px;
-      background: linear-gradient(135deg, #1a1a1a, #111);
-      border: 1px solid #e63946;
-      border-radius: 16px;
-      padding: 28px 40px;
-      text-align: center;
-      margin-bottom: 28px;
-      box-shadow:
-        0 0 30px rgba(230, 57, 70, 0.15);
-    }
+const total =
+  Number(data.total) || 0;
 
-    .total-box .label {
-      font-size: 0.9rem;
-      color: #aaa;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
+const hasPreviousValue =
+  totalElement.dataset.value !== undefined &&
+  totalElement.dataset.value !== "";
 
-    .total-box .number {
-      font-size: 3.2rem;
-      font-weight: 800;
-      color: #e63946;
-      margin: 8px 0 4px;
-      font-variant-numeric: tabular-nums;
-    }
+const previousTotal =
+  hasPreviousValue
+    ? Number(totalElement.dataset.value)
+    : null;
 
-    .increase {
-      font-size: 0.9rem;
-      color: #e63946;
-      font-weight: 600;
-      margin-bottom: 8px;
-      min-height: 20px;
-    }
 
-    .updated {
-      font-size: 0.85rem;
-      color: #666;
-    }
+/*
+  Calculate increase only when
+  we already have a previous value
+  during this page session.
+*/
+
+if (
+  hasPreviousValue &&
+  total > previousTotal
+) {
+
+  const increase =
+    total - previousTotal;
+
+  increaseElement.textContent =
+    "+" +
+    formatNumber(increase) +
+    " views since last update";
+
+} else if (!hasPreviousValue) {
+
+  /*
+    First time opening/reloading the page:
+    show the latest saved total,
+    but do not show "First update".
+  */
+
+  increaseElement.textContent = "";
+
+} else {
+
+  increaseElement.textContent = "";
+
+}
+
+
+animateNumber(
+  totalElement,
+  previousTotal === null ? total : previousTotal,
+  total,
+  previousTotal === null ? 0 : 1200
+);
+
+
+totalElement.dataset.value =
+  total;
 
     /* =========================
        PLATFORM GRID
@@ -866,20 +885,6 @@
             "+" +
             formatNumber(increase) +
             " views since last update";
-
-        }
-
-
-        /*
-          First load
-        */
-
-        if (
-          totalElement.dataset.value === undefined
-        ) {
-
-          increaseElement.textContent =
-            "First update";
 
         }
 
